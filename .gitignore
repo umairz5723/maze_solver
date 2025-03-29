@@ -1,0 +1,40 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+
+# Cache files
+*.log
+*.cache
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.iml
+
+# Python package files
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Generated maze images or outputs (optional, if applicable)
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Debugging and profiling data
+*.prof
+*.log
