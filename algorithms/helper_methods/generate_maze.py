@@ -48,8 +48,4 @@ def generate_maze(maze_type: str) -> List[List[str]]:
     if end_col < cols - 1:
         maze[rows - 1][end_col + 1] = '0'
     
-    # Print the maze
-    for row in maze:
-        print(" ".join(row))
-
     return maze
