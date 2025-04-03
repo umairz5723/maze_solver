@@ -10,6 +10,15 @@ body, html {
   color: #EAEAEA; /* Light Gray for general text */
 }
 
+/* Wrapper for both maze and legend */
+.maze-viewer-wrapper {
+  display: flex;
+  position: relative;
+  width: 80vw;
+  max-width: 800px;
+  justify-content: center;
+}
+
 /* Main container for the maze viewer */
 .maze-container {
   display: flex;
@@ -201,4 +210,24 @@ button:hover {
   margin: 0 0 5px 0; /* Reduced from 10px to 5px */
   font-size: 1.1em;
   text-align: center;
+}
+
+/* Responsive styling for smaller screens */
+@media (max-width: 1100px) {
+  .maze-viewer-wrapper {
+    flex-direction: column;
+    align-items: center;
+    width: 90vw;
+  }
+  
+  .maze-container {
+    width: 90vw;
+    max-width: none;
+    height: auto;
+    min-height: 70vh;
+  }
+  
+  .maze-grid {
+    height: 50vh;
+  }
 }

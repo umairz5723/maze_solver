@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './MazeViewer.css';
+import MazeLegend from './MazeLegend'; // Import the legend component
 
 const MazeViewer = () => {
   const [searchAlgorithm, setSearchAlgorithm] = useState('BFS');
@@ -67,6 +68,7 @@ const MazeViewer = () => {
               
               if (char === "S") color = "green"; // Start
               else if (char === "E") color = "red"; // End
+              else if (char === "#") color = "darkgray";
               else if (char === "X") color = "blue"; // Explored path
               else if (char === "*") color = "green";
               
@@ -89,46 +91,49 @@ const MazeViewer = () => {
   };
 
   return (
-    <div className="maze-container">
-      <h1>Maze Solver</h1>
+    <div className="maze-viewer-wrapper">
+      <div className="maze-container">
+        <h1>Maze Solver</h1>
 
-      {(loading || searching || mazeOutput.length > 0) && (
-        <h3 className="algorithm-status">
-          {loading ? 'Generating Maze...' : searching ? `Searching using ${getAlgorithmName()}` : `Path found using ${getAlgorithmName()}`}
-        </h3>
-      )}
+        {(loading || searching || mazeOutput.length > 0) && (
+          <h3 className="algorithm-status">
+            {loading ? 'Generating Maze...' : searching ? `Searching using ${getAlgorithmName()}` : `Path found using ${getAlgorithmName()}`}
+          </h3>
+        )}
 
-      <div className="maze-grid">
-        {loading ? <p>Generating Maze...</p> : renderMazeOutput()}
+        <div className="maze-grid">
+          {loading ? <p>Generating Maze...</p> : renderMazeOutput()}
+        </div>
+
+        {currentStep === mazeOutput.length - 1 && pathMessage && (
+          <div className="path-message">
+            <p>{pathMessage}</p>
+          </div>
+        )}
+
+        <div className="controls">
+          <div className="control-group">
+            <label htmlFor="search-select">Search Algorithm:</label>
+            <select id="search-select" value={searchAlgorithm} onChange={(e) => setSearchAlgorithm(e.target.value)}>
+              <option value="BFS">BFS</option>
+              <option value="DFS">DFS</option>
+              <option value="DIJKSTRA">DIJKSTRA</option>
+            </select>
+          </div>
+          <div className="control-group">
+            <label htmlFor="size-select">Maze Size:</label>
+            <select id="size-select" value={mazeSize} onChange={(e) => setMazeSize(e.target.value)}>
+              <option value="Small">Small</option>
+              <option value="Medium">Medium</option>
+              <option value="Large">Large</option>
+            </select>
+          </div>
+          <div className="button-container"> 
+            <button onClick={handleBegin}>Begin/Regenerate</button>
+          </div>
+        </div>
       </div>
-
-      {currentStep === mazeOutput.length - 1 && pathMessage && (
-        <div className="path-message">
-          <p>{pathMessage}</p>
-        </div>
-      )}
-
-      <div className="controls">
-        <div className="control-group">
-          <label htmlFor="search-select">Search Algorithm:</label>
-          <select id="search-select" value={searchAlgorithm} onChange={(e) => setSearchAlgorithm(e.target.value)}>
-            <option value="BFS">BFS</option>
-            <option value="DFS">DFS</option>
-            <option value="DIJKSTRA">DIJKSTRA</option>
-          </select>
-        </div>
-        <div className="control-group">
-          <label htmlFor="size-select">Maze Size:</label>
-          <select id="size-select" value={mazeSize} onChange={(e) => setMazeSize(e.target.value)}>
-            <option value="Small">Small</option>
-            <option value="Medium">Medium</option>
-            <option value="Large">Large</option>
-          </select>
-        </div>
-        <div className="button-container"> 
-          <button onClick={handleBegin}>Begin/Regenerate</button>
-        </div>
-      </div>
+      <MazeLegend />
     </div>
   );
 };
