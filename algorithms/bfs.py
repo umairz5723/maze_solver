@@ -1,72 +1,70 @@
-from typing import List
+from typing import List, Dict
 from collections import deque
-import time  # Import time for sleep
-from algorithms.helper_methods.initalize_maze_from_file import load_maze_from_file
 from algorithms.helper_methods.find_start import find_starting_cell
-from algorithms.helper_methods.clear_screen import clear_screen
-from algorithms.helper_methods.generate_maze import generate_maze
+from algorithms.helper_methods.reconstruct_optimal_path import reconstruct_optimal_path
 
-def bfs(matrix: List[List[str]]):
+def bfs(matrix: List[List[str]]) -> Dict:
     rows = len(matrix)
     cols = len(matrix[0])
 
     queue = deque()
+    parents = {}
 
-    # Use the helper method to find the starting cell which is at the border
+    # Find the starting position
     starting_cell = find_starting_cell(matrix)
-
-    # Error handling if no starting point is found
     if not starting_cell:
-        return "Generated Matrix doesn't have a valid starting point"
+        return {"message": "Generated Matrix doesn't have a valid starting point"}
 
-    # Place the starting position into the queue
     r, c = starting_cell
     queue.append((r, c))
-    matrix[r][c] = 'X'  # Mark the start cell as visited
+    matrix[r][c] = 'S'  # Mark start
 
-    # Coordinates to check the 4 neighbor cells
+    # Locate the end position
+    end_cell = None
+    for i in range(rows):
+        for j in range(cols):
+            if matrix[i][j] == 'E':
+                end_cell = (i, j)
+
+    # Movement directions: Down, Up, Right, Left
     neighbors = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-    maze_output = []  # This will store the maze state at each step
+    maze_output = []
+    visited = set()
 
-    # Begin BFS Search
     while queue:
         r, c = queue.popleft()
+        visited.add((r, c))  # Mark cell as visited
 
-        # Found the exit/goal of the maze
-        if matrix[r][c] == 'E':
-            maze_output.append(f"We've made it to the end of the maze! At: ({r}, {c})")
-            return maze_output
+        if (r, c) == end_cell:
+            path_cells = reconstruct_optimal_path(parents, (r, c), matrix)  # Backtrack the optimal path
+            maze_output.append("\n".join("".join(row) for row in matrix))  # Append final state
 
-        # Mark the current cell as visited
-        matrix[r][c] = 'X'
+            return {
+                "maze_output": maze_output,
+                "path_cells": path_cells,
+                "start": starting_cell,
+                "end": end_cell,
+                "message": f"We've reached the end at {end_cell}!"
+            }
 
-        # Store the current state of the maze as a string
-        maze_state = ""
-        for row in matrix:
-            row_str = ''
-            for cell in row:
-                if cell == 'X':
-                    row_str += 'X'  # Path
-                elif cell == '1':
-                    row_str += '1'  # Wall
-                elif cell == 'S':
-                    row_str += 'S'  # Start
-                elif cell == 'E':
-                    row_str += 'E'  # End
-                else:
-                    row_str += '.'  # Empty cell
-            maze_state += row_str + "\n"
+        if matrix[r][c] not in {'S', 'E'}:
+            matrix[r][c] = 'X'  # Mark explored cell
 
-        maze_output.append(maze_state)
-        
-        # Explore neighbors (down, up, right, left)
-        for row, col in neighbors:
-            dr = r + row
-            dc = c + col
+        # Store the maze state
+        maze_output.append("\n".join("".join(row) for row in matrix))
 
-            # Ensure the neighbor cell is within bounds and not a wall or already visited
-            if 0 <= dr < rows and 0 <= dc < cols and matrix[dr][dc] != 'X' and matrix[dr][dc] != '1':
-                queue.append((dr, dc))
+        for dr, dc in neighbors:
+            nr, nc = r + dr, c + dc
+            if (0 <= nr < rows and 0 <= nc < cols 
+                and (nr, nc) not in visited 
+                and matrix[nr][nc] not in {'X', 'S', '#'}):
+                queue.append((nr, nc))
+                parents[(nr, nc)] = (r, c)  # Store parent for backtracking
 
-    maze_output.append("There is no path to the end of this maze")
-    return maze_output
+    return {
+        "maze_output": maze_output,
+        "path_cells": [],
+        "start": starting_cell,
+        "end": end_cell,
+        "message": "There is no path to the end of this maze"
+    }

@@ -10,7 +10,7 @@ def generate_maze(maze_type: str) -> List[List[str]]:
     rows, cols = sizes[maze_type]
 
     # Initialize the maze full of walls ('1')
-    maze = [['1' for _ in range(cols)] for _ in range(rows)]
+    maze = [['#' for _ in range(cols)] for _ in range(rows)]
     
     # Randomize 'S' and 'E' positions within the first and last rows
     start_col = random.randint(0, cols - 1)
@@ -26,7 +26,7 @@ def generate_maze(maze_type: str) -> List[List[str]]:
 
         for dr, dc in directions:
             nr, nc = r + dr * 2, c + dc * 2
-            if 0 < nr < rows - 1 and 0 < nc < cols - 1 and maze[nr][nc] == '1':
+            if 0 < nr < rows - 1 and 0 < nc < cols - 1 and maze[nr][nc] == '#':
                 maze[r + dr][c + dc] = '0'
                 maze[nr][nc] = '0'
                 carve_path(nr, nc)
