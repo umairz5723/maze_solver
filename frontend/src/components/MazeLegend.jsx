@@ -23,7 +23,7 @@ const MazeLegend = () => {
           </div>
         ))}
       </div>
-      <h5>- Numbers represent the cost to go to a given cell</h5>
+      <h5>• Numbers represent the cost to go to a given cell</h5>
     </div>
   );
 };

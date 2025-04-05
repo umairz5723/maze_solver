@@ -8,7 +8,7 @@ const MazeViewer = () => {
   const [mazeOutput, setMazeOutput] = useState([]);  
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [pathCells, setPathCells] = useState([]); // Store optimal path cells
+  const [optimalPathCells, setOptimalPathCells] = useState([]); // Store optimal path cells
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [pathMessage, setPathMessage] = useState('');
@@ -30,7 +30,7 @@ const MazeViewer = () => {
     }
   }, [currentStep, mazeOutput, mazeSize]);
 
-  const handleBegin = async () => {
+  const handleSearch = async () => {
     setLoading(true);
     setSearching(true);
 
@@ -38,16 +38,26 @@ const MazeViewer = () => {
     const algo = searchAlgorithm.toLowerCase();
 
     try {
-      const response = await fetch(`http://localhost:5000/${algo}?size=${sizeParam}`);
+      // Construct the API using the algorithm and size
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/${algo}?size=${sizeParam}`);
       const data = await response.json();
       
       setMazeOutput(data.maze_output || []);
-      setPathCells(data.path_cells || []);
+      setOptimalPathCells(data.path_cells || []);
       setStart(data.start || null);
       setEnd(data.end || null);
       setPathMessage(data.message || '');
       setCurrentStep(0);
       setLoading(false);
+
+      // If the Maze couldn't generate an existing path from S to E, regenerate it again
+      if (data.path_cells && data.path_cells.length === 0) {
+        // Trigger the button click again if no path was found
+        setTimeout(() => {
+          handleSearch();
+          console.log("Unreachable exit in Maze detected")
+        }, 10); // Delay before re-trying
+      }
 
     } catch (error) {
       console.error("Error fetching maze data:", error);
@@ -65,12 +75,11 @@ const MazeViewer = () => {
           <div key={rowIndex} className="maze-line">
             {line.split("").map((char, colIndex) => {
               let color = "black"; // Default empty space
-              
               if (char === "S") color = "green"; // Start
               else if (char === "E") color = "red"; // End
-              else if (char === "#") color = "darkgray";
+              else if (char === "#") color = "darkgray"; // Obstruction
               else if (char === "X") color = "blue"; // Explored path
-              else if (char === "*") color = "green";
+              else if (char === "*") color = "green"; // Optimal Path
               
 
               return (
@@ -85,6 +94,7 @@ const MazeViewer = () => {
     );
   };
 
+  // Set the algorithmn using the selected drop-down menu item
   const getAlgorithmName = () => {
     const algoNames = { BFS: 'Breadth-First Search', DFS: 'Depth-First Search', DIJKSTRA: 'Dijkstra Search' };
     return algoNames[searchAlgorithm] || searchAlgorithm;
@@ -129,7 +139,7 @@ const MazeViewer = () => {
             </select>
           </div>
           <div className="button-container"> 
-            <button onClick={handleBegin}>Begin/Regenerate</button>
+            <button onClick={handleSearch}>Begin/Regenerate</button>
           </div>
         </div>
       </div>

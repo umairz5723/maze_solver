@@ -1,3 +1,4 @@
+import React from 'react';
 import MazeViewer from './components/MazeViewer'
 import './App.css'
 
