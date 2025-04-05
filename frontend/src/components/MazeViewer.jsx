@@ -8,7 +8,7 @@ const MazeViewer = () => {
   const [mazeOutput, setMazeOutput] = useState([]);  
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [pathCells, setPathCells] = useState([]); // Store optimal path cells
+  const [optimalPathCells, setOptimalPathCells] = useState([]); // Store optimal path cells
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
   const [pathMessage, setPathMessage] = useState('');
@@ -30,7 +30,7 @@ const MazeViewer = () => {
     }
   }, [currentStep, mazeOutput, mazeSize]);
 
-  const handleBegin = async () => {
+  const handleSearch = async () => {
     setLoading(true);
     setSearching(true);
 
@@ -38,11 +38,12 @@ const MazeViewer = () => {
     const algo = searchAlgorithm.toLowerCase();
 
     try {
+      // Construct the API using the algorithm and size
       const response = await fetch(`http://3.86.243.196:5173/${algo}?size=${sizeParam}`);
       const data = await response.json();
       
       setMazeOutput(data.maze_output || []);
-      setPathCells(data.path_cells || []);
+      setOptimalPathCells(data.path_cells || []);
       setStart(data.start || null);
       setEnd(data.end || null);
       setPathMessage(data.message || '');
@@ -56,8 +57,7 @@ const MazeViewer = () => {
           handleSearch();
           console.log("Unreachable exit in Maze detected")
         }, 10); // Delay before re-trying
-        }
-
+      }
 
     } catch (error) {
       console.error("Error fetching maze data:", error);
@@ -75,12 +75,11 @@ const MazeViewer = () => {
           <div key={rowIndex} className="maze-line">
             {line.split("").map((char, colIndex) => {
               let color = "black"; // Default empty space
-              
               if (char === "S") color = "green"; // Start
               else if (char === "E") color = "red"; // End
-              else if (char === "#") color = "darkgray";
+              else if (char === "#") color = "darkgray"; // Obstruction
               else if (char === "X") color = "blue"; // Explored path
-              else if (char === "*") color = "green";
+              else if (char === "*") color = "green"; // Optimal Path
               
 
               return (
@@ -95,6 +94,7 @@ const MazeViewer = () => {
     );
   };
 
+  // Set the algorithmn using the selected drop-down menu item
   const getAlgorithmName = () => {
     const algoNames = { BFS: 'Breadth-First Search', DFS: 'Depth-First Search', DIJKSTRA: 'Dijkstra Search' };
     return algoNames[searchAlgorithm] || searchAlgorithm;
@@ -139,7 +139,7 @@ const MazeViewer = () => {
             </select>
           </div>
           <div className="button-container"> 
-            <button onClick={handleBegin}>Begin/Regenerate</button>
+            <button onClick={handleSearch}>Begin/Regenerate</button>
           </div>
         </div>
       </div>
