@@ -39,7 +39,7 @@ const MazeViewer = () => {
 
     try {
       // Construct the API using the algorithm and size
-      const response = await fetch(`http://3.86.243.196:5173/${algo}?size=${sizeParam}`);
+      const response = await fetch(`http://3.86.243.196:5000/${algo}?size=${sizeParam}`);
       const data = await response.json();
       
       setMazeOutput(data.maze_output || []);
