@@ -49,6 +49,16 @@ const MazeViewer = () => {
       setCurrentStep(0);
       setLoading(false);
 
+      // If the Maze couldn't generate an existing path from S to E, regenerate it again
+      if (data.path_cells && data.path_cells.length === 0) {
+        // Trigger the button click again if no path was found
+        setTimeout(() => {
+          handleSearch();
+          console.log("Unreachable exit in Maze detected")
+        }, 10); // Delay before re-trying
+        }
+
+
     } catch (error) {
       console.error("Error fetching maze data:", error);
       setLoading(false);
