@@ -38,7 +38,7 @@ const MazeViewer = () => {
     const algo = searchAlgorithm.toLowerCase();
 
     try {
-      const response = await fetch(`http://localhost:5000/${algo}?size=${sizeParam}`);
+      const response = await fetch(`http://3.86.243.196:5000/${algo}?size=${sizeParam}`);
       const data = await response.json();
       
       setMazeOutput(data.maze_output || []);
