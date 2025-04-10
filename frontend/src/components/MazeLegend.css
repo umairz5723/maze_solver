@@ -88,3 +88,37 @@
       margin-right: 10px;
     }
   }
+
+  .coordinate-field {
+    width: 50px; /* Make input fields smaller */
+    text-align: center;
+    padding: 4px;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .coordinate-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .coordinates-help {
+    color: #EAEAEA;
+    font-size: 0.8em;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    text-align: center;
+    width: 50px;
+}
+
+.input-error-container {
+  color: #FF5252;
+  text-align: center;
+  margin-top: 15px;
+  padding: 8px;
+  font-weight: bold;
+  background-color: rgba(255, 0, 0, 0.1);
+  border-radius: 4px;
+  max-width: 400px;
+  margin: 15px auto 0;
+}
