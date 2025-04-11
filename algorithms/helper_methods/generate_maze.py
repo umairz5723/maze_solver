@@ -9,8 +9,8 @@ def generate_maze(maze_type: str) -> List[List[str]]:
     
     rows, cols = sizes[maze_type]
 
-    # Initialize the maze full of walls ('1')
-    maze = [['1' for _ in range(cols)] for _ in range(rows)]
+    # Initialize the maze full of walls ('#')
+    maze = [['#' for _ in range(cols)] for _ in range(rows)]
     
     # Randomize 'S' and 'E' positions within the first and last rows
     start_col = random.randint(0, cols - 1)
@@ -20,16 +20,28 @@ def generate_maze(maze_type: str) -> List[List[str]]:
     maze[rows - 1][end_col] = 'E'  # End somewhere in the last row
 
     def carve_path(r, c):
-        """Recursively carves a solvable maze using DFS."""
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-        random.shuffle(directions)
+        """Iteratively carves a solvable maze using DFS with a stack."""
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]  # Right, Down, Left, Up
+        stack = [(r, c)]  # Start the carving at the given position
 
-        for dr, dc in directions:
-            nr, nc = r + dr * 2, c + dc * 2
-            if 0 < nr < rows - 1 and 0 < nc < cols - 1 and maze[nr][nc] == '1':
-                maze[r + dr][c + dc] = '0'
-                maze[nr][nc] = '0'
-                carve_path(nr, nc)
+        while stack:
+            current_r, current_c = stack[-1]
+            random.shuffle(directions)
+
+            # Try all 4 directions
+            moved = False
+            for dr, dc in directions:
+                nr, nc = current_r + dr * 2, current_c + dc * 2
+                if 0 < nr < rows - 1 and 0 < nc < cols - 1 and maze[nr][nc] == '#':
+                    maze[current_r + dr][current_c + dc] = '0'
+                    maze[nr][nc] = '0'
+                    stack.append((nr, nc))
+                    moved = True
+                    break  # Break after carving one path to continue in the maze
+
+            # If no direction was valid, backtrack
+            if not moved:
+                stack.pop()
 
     # Start DFS from a random position near the start row
     start_r = 1 if rows > 2 else 0
@@ -48,8 +60,4 @@ def generate_maze(maze_type: str) -> List[List[str]]:
     if end_col < cols - 1:
         maze[rows - 1][end_col + 1] = '0'
     
-    # Print the maze
-    for row in maze:
-        print(" ".join(row))
-
     return maze

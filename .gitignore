@@ -38,3 +38,8 @@ build/
 # Debugging and profiling data
 *.prof
 *.log
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
